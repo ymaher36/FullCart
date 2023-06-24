@@ -1,0 +1,173 @@
+databaseChangeLog:
+  - changeSet:
+      id: order1
+      author: ElZew
+      labels: 01_create_cart_cartproduct_order_orderproduct_tables
+      changes:
+        - createTable:
+            tableName: order
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+
+              - column:
+                  name: quantity_of_items
+                  type: int
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: total_price
+                  type: decimal
+                  constraints:
+                    nullable: false
+              - column:
+                  name: payment_type
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: shipping_address_id
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: customer_id
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: others
+                  type: text
+
+        - addForeignKeyConstraint:
+            baseTableName: order
+            baseColumnNames: shipping_address_id
+            constraintName: shipping_address_fk
+            referencedTableName: address
+            referencedColumnNames: id
+        - addForeignKeyConstraint:
+            baseTableName: order
+            baseColumnNames: customer_id
+            constraintName: order_customer_fk
+            referencedTableName: user
+            referencedColumnNames: id
+
+        - createTable:
+            tableName: order_product
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+
+              - column:
+                  name: quantity
+                  type: int
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: product_id
+                  type: int
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: order_id
+                  type: int
+                  constraints:
+                    nullable: false
+
+        - addForeignKeyConstraint:
+            baseTableName: order_product
+            baseColumnNames: order_id
+            constraintName: order_fk
+            referencedTableName: order
+            referencedColumnNames: id
+        - addForeignKeyConstraint:
+            baseTableName: order_product
+            baseColumnNames: product_id
+            constraintName: order_product_fk
+            referencedTableName: product
+            referencedColumnNames: id
+
+          createTable:
+            tableName: cart
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+
+              - column:
+                  name: quantity_of_items
+                  type: int
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: total_price
+                  type: decimal
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: customer_id
+                  type: int
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: cart
+            baseColumnNames: customer_id
+            constraintName: cart_customer_fk
+            referencedTableName: user
+            referencedColumnNames: id
+
+        - createTable:
+            tableName: cart_product
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+
+              - column:
+                  name: quantity
+                  type: int
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: product_id
+                  type: int
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: cart_id
+                  type: int
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: cart_product
+            baseColumnNames: cart_id
+            constraintName: cart_fk
+            referencedTableName: cart
+            referencedColumnNames: id
+        - addForeignKeyConstraint:
+            baseTableName: cart_product
+            baseColumnNames: product_id
+            constraintName: cart_product_fk
+            referencedTableName: product
+            referencedColumnNames: id

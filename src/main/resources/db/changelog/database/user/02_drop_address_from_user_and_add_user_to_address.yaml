@@ -1,0 +1,29 @@
+databaseChangeLog:
+  - changeSet:
+      author: ElZew
+      id: user2
+      labels: 02_drop_address_from_user_and_add_user_to_address
+      changes:
+        - dropForeignKeyConstraint:
+            constraintName: address_fk
+            baseTableName: user
+        - dropColumn:
+            tableName: user
+            columnName: address_id
+
+        - addColumn:
+            tableName: address
+            columns:
+              - column:
+                  name: user_id
+                  type: int
+                  constraints:
+                    nullable: false
+
+        - addForeignKeyConstraint:
+            baseTableName: address
+            baseColumnNames: user_id
+            constraintName: user_address_fk
+            referencedTableName: user
+            referencedColumnNames: id
+

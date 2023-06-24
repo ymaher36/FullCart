@@ -1,0 +1,153 @@
+databaseChangeLog:
+  - changeSet:
+      author: ElZew
+      id: product1
+      labels: 01_create_category_product_price_inventory_tables
+      changes:
+        - createTable:
+            tableName: category
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+
+              - column:
+                  name: name
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+
+        - createTable:
+            tableName: product
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+
+              - column:
+                  name: name
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+
+              - column:
+                  name: description
+                  type: text
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: image
+                  type: varchar(50)
+
+              - column:
+                  name: is_deleted
+                  type: boolean
+                  defaultValue: "false"
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: seller_id
+                  type: int
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: category_id
+                  type: int
+                  constraints:
+                    nullable: false
+
+        - addForeignKeyConstraint:
+            baseTableName: product
+            baseColumnNames: category_id
+            constraintName: category_fk
+            referencedTableName: category
+            referencedColumnNames: id
+        - addForeignKeyConstraint:
+            baseTableName: product
+            baseColumnNames: seller_id
+            constraintName: seller_fk
+            referencedTableName: user
+            referencedColumnNames: id
+
+        - createTable:
+            tableName: price
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+
+              - column:
+                  name: selling_price
+                  type: decimal
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: effective_date
+                  type: datetime
+                  defaultValueComputed: NOW()
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: product_id
+                  type: int
+                  constraints:
+                    nullable: false
+
+        - addForeignKeyConstraint:
+            baseTableName: price
+            baseColumnNames: product_id
+            constraintName: product_price_fk
+            referencedTableName: product
+            referencedColumnNames: id
+
+        - createTable:
+            tableName: inventory
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+
+              - column:
+                  name: available_quantity
+                  type: int
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: sold_quantity
+                  type: int
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: product_id
+                  type: int
+                  constraints:
+                    nullable: false
+                    unique: true
+
+        - addForeignKeyConstraint:
+            baseTableName: inventory
+            baseColumnNames: product_id
+            constraintName: product_inventory_fk
+            referencedTableName: product
+            referencedColumnNames: id

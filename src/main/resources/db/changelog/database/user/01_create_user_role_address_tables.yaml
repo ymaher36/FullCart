@@ -1,0 +1,208 @@
+databaseChangeLog:
+  - changeSet:
+      author: ElZew
+      id: user1
+      labels: 01_create_user_role_address_tables
+      changes:
+        - createTable:
+            tableName: governorate
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+
+              - column:
+                  name: name
+                  type: varchar(30)
+                  constraints:
+                    unique: true
+                    nullable: false
+
+        - createTable:
+            tableName: district
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+
+              - column:
+                  name: name_ar
+                  type: varchar(50)
+                  constraints:
+                    unique: true
+                    nullable: false
+              - column:
+                  name: name_en
+                  type: varchar(50)
+                  constraints:
+                    unique: true
+                    nullable: false
+              - column:
+                  name: governorate_id
+                  type: int
+                  constraints:
+                    nullable: false
+
+        - addForeignKeyConstraint:
+            baseTableName: district
+            baseColumnNames: governorate_id
+            constraintName: governorate_fk
+            referencedTableName: governorate
+            referencedColumnNames: id
+
+        - createTable:
+            tableName: address
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+
+              - column:
+                  name: district_id
+                  type: int
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: street
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: building
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: floor
+                  type: varchar(50)
+
+              - column:
+                  name: apt
+                  type: varchar(50)
+              - column:
+                  name: other
+                  type: text
+
+        - addForeignKeyConstraint:
+            baseTableName: address
+            baseColumnNames: district_id
+            constraintName: district_fk
+            referencedTableName: district
+            referencedColumnNames: id
+
+        - createTable:
+            tableName: role
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: varchar(20)
+                  constraints:
+                    unique: true
+                    nullable: false
+        - createTable:
+            tableName: user
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+
+              - column:
+                  name: username
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+
+              - column:
+                  name: password
+                  type: varchar(80)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: name
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: email
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+
+              - column:
+                  name: phone_number
+                  type: varchar(13)
+                  constraints:
+                    nullable: false
+                    unique: true
+
+              - column:
+                  name: is_active
+                  type: boolean
+                  defaultValue: "true"
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: last_login
+                  type: datetime
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: created_at
+                  type: datetime
+                  defaultValueComputed: NOW()
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: role_id
+                  type: int
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: address_id
+                  type: int
+
+        - addForeignKeyConstraint:
+            baseColumnNames: role_id
+            baseTableName: user
+            constraintName: role_fk
+            referencedTableName: role
+            referencedColumnNames: id
+
+        - addForeignKeyConstraint:
+            baseTableName: user
+            baseColumnNames: address_id
+            constraintName: address_fk
+            referencedTableName: address
+            referencedColumnNames: id
+
+
+
