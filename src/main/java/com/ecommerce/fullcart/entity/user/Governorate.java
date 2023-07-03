@@ -2,6 +2,8 @@ package com.ecommerce.fullcart.entity.user;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "governorate")
 public class Governorate {
@@ -12,6 +14,10 @@ public class Governorate {
 
     @Column(name = "name")
     private String name;
+
+    @OneToMany(mappedBy = "governorate",
+            fetch = FetchType.LAZY)
+    private List<District> districtList;
 
     public Governorate() {
     }
@@ -36,11 +42,19 @@ public class Governorate {
         this.name = name;
     }
 
+    public List<District> getDistrictList() {
+        return districtList;
+    }
+
+    public void setDistrictList(List<District> districtList) {
+        this.districtList = districtList;
+    }
+
     @Override
     public String toString() {
-        return "Governorate{" +
+        return "Governorate { " +
                 "id=" + id +
-                ", name='" + name + '\'' +
-                '}';
+                ", name='" + name +
+                " }";
     }
 }

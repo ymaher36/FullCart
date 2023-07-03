@@ -2,6 +2,8 @@ package com.ecommerce.fullcart.entity.user;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "district")
 public class District {
@@ -19,6 +21,10 @@ public class District {
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "governorate_id")
     private Governorate governorate;
+
+    @OneToMany(mappedBy = "district",
+            fetch = FetchType.LAZY)
+    private List<Address> addressList;
 
     public District() {
     }
@@ -53,6 +59,14 @@ public class District {
 
     public void setGovernorate(Governorate governorate) {
         this.governorate = governorate;
+    }
+
+    public List<Address> getAddressList() {
+        return addressList;
+    }
+
+    public void setAddressList(List<Address> addressList) {
+        this.addressList = addressList;
     }
 
     @Override

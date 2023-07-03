@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>FullCart - Home</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+          integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+          crossorigin="anonymous">
+</head>
+<body>
+<nav class="navbar navbar-expand navbar-dark bg-primary">
+    <a class="navbar-brand h1" th:href="@{/}">FullCart</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a class="nav-link" th:href="@{/}">Home <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Products</a>
+            </li>
+            <li class="nav-item" th:if="${#authorization.expression('isAuthenticated()')}">
+                <a class="nav-link" href="#">Cart</a>
+            </li>
+        </ul>
+        <ul class="navbar-nav navbar-right">
+            <li class="nav-item" th:if="${#authorization.expression('isAuthenticated()')}">
+                <a class="nav-link font-weight-bold h5" href="#" th:text="${#strings.capitalize(user.name)}"></a>
+            </li>
+            <li class="nav-item active" th:if="${#authorization.expression('!isAuthenticated()')}">
+                <a class="nav-link" th:href="@{/showLoginPage}"><span class="glyphicon glyphicon-log-in"
+                                                                      aria-hidden="true"></span>&nbsp;Sign in</a>
+            </li>
+
+            <li class="nav-item" th:if="${#authorization.expression('isAuthenticated()')}">
+                <form action="#" th:action="@{/logout}" method="POST">
+                    <button type="submit" class="btn btn-danger">
+                        Logout
+                    </button>
+                </form>
+            </li>
+        </ul>
+    </div>
+</nav>
+<div class="container p-4">
+    <div class="row justify-content-center">
+        <div class="col-9">
+            <div class="input-group">
+                <input type="search" list="products" class="form-control rounded" placeholder="Search"
+                       id="products-search" aria-label="Search" aria-describedby="search-addon"/>
+                <datalist id="products">
+
+                </datalist>
+                <button type="button" class="btn btn-primary">search</button>
+            </div>
+        </div>
+        <div class="col-12"></div>
+    </div>
+    <div class="card m-2">
+        <div class="card-header">
+            <div th:if="${#authorization.expression('isAuthenticated()')}">
+                <h1 th:text="'Hello '+${user.name}"></h1>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    const productsSearch = document.getElementById("products-search")
+
+    const debounce = (func, delay = 500) => {
+        let debounceTimer
+        return function () {
+            const context = this
+            const args = arguments
+            clearTimeout(debounceTimer)
+            debounceTimer
+                = setTimeout(() => func.apply(context, args), delay)
+        }
+    }
+
+
+    productsSearch.addEventListener('keyup', debounce(async (event) => {
+        const searchValue = productsSearch.value
+        const response = await fetch(`/product/search?search=${searchValue}`)
+        // const data = await response.json()
+    }))
+
+
+    // const processChange = debounce(() => productsSearch.addEventListener('change', (event) => {
+    //     console.log(event)
+    // }));
+
+</script>
+</html>
