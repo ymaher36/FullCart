@@ -70,10 +70,9 @@ public class UserService implements UserDetailsService {
         return userRepository.findByUsername(username);
     }
 
-    public User save(UserDto newUser) {
+    public User save(UserDto newUser, String role_id) {
         User user = new User();
-        Role role = roleRepository.findById(1);
-
+        Role role = roleRepository.findById(Integer.parseInt(role_id));
         user.setUsername(newUser.getUsername());
         user.setPassword(passwordEncoder.encode(newUser.getPassword()));
         user.setName(newUser.getName());

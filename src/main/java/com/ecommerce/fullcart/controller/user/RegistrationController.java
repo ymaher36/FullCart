@@ -14,6 +14,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 @Controller
@@ -41,8 +43,12 @@ public class RegistrationController {
     @GetMapping("/showRegistrationForm")
     public String showRegistrationForm(Model theModel, Authentication auth) {
         if (auth != null) return "redirect:/";
-
+        Map<Integer, String> role = new HashMap<>();
+        role.put(1, "Customer");
+        role.put(2, "Seller");
         theModel.addAttribute("newUser", new UserDto());
+        theModel.addAttribute("roleList", role);
+
 
         return "auth/registration-form";
     }
@@ -50,6 +56,7 @@ public class RegistrationController {
     @PostMapping("/processRegistration")
     public String processRegistrationForm(
             @Valid @ModelAttribute("newUser") UserDto theNewUser,
+            @RequestParam(name = "role") String role_id,
             BindingResult theBindingResult,
             HttpSession session, Model theModel) {
 
@@ -72,7 +79,7 @@ public class RegistrationController {
         }
 
         // create user account and store in the databse
-        User savedUser = userService.save(theNewUser);
+        User savedUser = userService.save(theNewUser,role_id);
         logger.info("Successfully created user: " + username);
 
         // place user in the web http session for later use
