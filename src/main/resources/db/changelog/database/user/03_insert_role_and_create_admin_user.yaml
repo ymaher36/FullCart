@@ -1,0 +1,22 @@
+databaseChangeLog:
+  - changeSet:
+      author: ElZew
+      labels: 03_insert_role_and_create_admin_user
+      id: user3
+      changes:
+        - insert:
+            tableName: role
+            columns:
+              - column:
+                  name: name
+                  value: Customer
+        - insert:
+            tableName: role
+            columns:
+              - column:
+                  name: name
+                  value: Seller
+#
+#        - insert:
+#            tableName: user
+

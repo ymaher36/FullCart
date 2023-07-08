@@ -2,6 +2,7 @@ package com.ecommerce.fullcart.controller.user;
 
 import com.ecommerce.fullcart.dto.UserDto;
 import com.ecommerce.fullcart.entity.user.User;
+import com.ecommerce.fullcart.service.user.RoleService;
 import com.ecommerce.fullcart.service.user.UserService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -26,10 +27,12 @@ public class RegistrationController {
     private Logger logger = Logger.getLogger(getClass().getName());
 
     private UserService userService;
+    private RoleService roleService;
 
     @Autowired
     public RegistrationController(UserService userService) {
         this.userService = userService;
+
     }
 
     @InitBinder
