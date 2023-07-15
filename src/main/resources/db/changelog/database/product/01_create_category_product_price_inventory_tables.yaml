@@ -92,7 +92,7 @@ databaseChangeLog:
 
               - column:
                   name: selling_price
-                  type: decimal
+                  type: decimal(10,2)
                   constraints:
                     nullable: false
 

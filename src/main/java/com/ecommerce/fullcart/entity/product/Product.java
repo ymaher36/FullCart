@@ -41,9 +41,9 @@ public class Product {
     @NotNull(message = " is required")
     private Category category;
 
-    @OneToMany(mappedBy = "pricingProduct")
+    @OneToMany(mappedBy = "pricingProduct", cascade = CascadeType.ALL)
     private List<Price> priceList;
-    @OneToOne(mappedBy = "refProduct")
+    @OneToOne(mappedBy = "refProduct", cascade = CascadeType.ALL)
     private Inventory inventory;
 
     public Product() {
@@ -129,8 +129,8 @@ public class Product {
                 ", description='" + description + '\'' +
                 ", image='" + image + '\'' +
                 ", isDeleted=" + isDeleted +
-                ", seller=" + seller +
-                ", category=" + category +
+                ", seller=" + seller.getName() +
+                ", category=" + category.getName() +
                 '}';
     }
 }

@@ -1,27 +1,26 @@
 package com.ecommerce.fullcart.dto;
 
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public class UserDto {
-    @NotNull(message = " is required")
+    @NotNull(message = "Username is required")
     @Size(min = 6, max = 18, message = " must be between 6 and 18 character.")
     private String username;
 
-    @NotNull(message = " is required")
+    @NotNull(message = "Password is required")
     @Size(min = 6, max = 18, message = " must be between 6 and 18 character.")
     private String password;
 
-    @NotNull(message = " is required")
+    @NotNull(message = "Name is required")
     private String name;
 
-    @NotNull(message = " is required")
+    @NotNull(message = "Email is required")
     @Pattern(regexp = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$")
     private String email;
 
-    @NotNull(message = " is required")
+    @NotNull(message = "Phone number is required")
     @Size(min = 11, max = 13, message = " is not valid")
     private String phoneNumber;
 

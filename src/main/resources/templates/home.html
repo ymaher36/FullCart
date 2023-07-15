@@ -3,10 +3,10 @@
 <head>
     <title>FullCart - Home</title>
     <meta charset="utf-8">
-    <link rel="stylesheet"
-          href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
-          integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
-          crossorigin="anonymous">
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" type="text/css"/>
+    <script th:src="@{/webjars/popper.js/1.16.0/umd/popper.js}"></script>
+    <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+    <script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
 </head>
 <body>
 <nav class="navbar navbar-expand navbar-dark bg-primary">
@@ -21,21 +21,19 @@
             <li class="nav-item active">
                 <a class="nav-link" th:href="@{/}">Home <span class="sr-only">(current)</span></a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">Products</a>
-            </li>
+
             <li class="nav-item" th:if="${#authorization.expression('isAuthenticated()')}
-                                            and ${#authorization.expression('hasRole(''ROLE_CUSTOMER'')')}">
+                                            and ${#authorization.expression('hasAuthority(''Customer'')')}">
                 <a class="nav-link" href="#">Cart</a>
             </li>
             <li class="nav-item" th:if="${#authorization.expression('isAuthenticated()')}
-                                            and ${#authorization.expression('hasRole(''ROLE_SELLER'')')}">
-                <a class="nav-link" th:href="@{/product/my-products(user=${user.id})}">My Products</a>
+                                            and ${#authorization.expression('hasAuthority(''Seller'')')}">
+                <a class="nav-link" th:href="@{/product/my-products}">My Products and Orders</a>
             </li>
         </ul>
         <ul class="navbar-nav navbar-right">
             <li class="nav-item" th:if="${#authorization.expression('isAuthenticated()')}">
-                <a class="nav-link font-weight-bold h5" href="#" th:text="${#strings.capitalize(user.name)}"></a>
+                <a class="nav-link font-weight-bold h5" th:href="@{${'/profile/'+user.getId()}(type=details)}" th:text="${#strings.capitalize(user.name)}"></a>
             </li>
             <li class="nav-item active" th:if="${#authorization.expression('!isAuthenticated()')}">
                 <a class="nav-link" th:href="@{/showLoginPage}"><span class="glyphicon glyphicon-log-in"
@@ -54,14 +52,21 @@
 </nav>
 <div class="container p-4">
     <div class="row justify-content-center">
-        <div class="col-9">
-            <div class="input-group">
-                <input type="search" list="products" class="form-control rounded" placeholder="Search"
-                       id="products-search" aria-label="Search" aria-describedby="search-addon"/>
-                <datalist id="products">
+        <div class="input-group my-4 col-12 mx-auto">
 
-                </datalist>
-                <button type="button" class="btn btn-primary">search</button>
+            <label for="products-search" class="h3 mr-2">
+                Search for product
+            </label>
+            <input class="form-control" type="search"
+                   id="products-search">
+            <span class="input-group-text border-0" id="search-addon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                             class="bi bi-search" viewBox="0 0 16 16">
+                          <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                        </svg>
+            </span>
+            <div class="dropdown-menu" style="width: 80%" id="products-data-list">
+
             </div>
         </div>
         <div class="col-12"></div>
@@ -69,7 +74,12 @@
     <div class="card m-2">
         <div class="card-header">
             <div th:if="${#authorization.expression('isAuthenticated()')}">
-                <h1 th:text="'Hello '+${user.name} + ' Role: ' + ${#authorization.expression('hasRole(''ROLE_SELLER'')')}"></h1>
+                <h1 th:text="'Welcome Back '+${user.name}+'.'"></h1>
+            </div>
+            <div th:if="${!#authorization.expression('isAuthenticated()')}">
+                <h1>Welcome Guest we wish you enjoy our platform.</h1>
+                <h4>For full access <a href="#" th:href="@{/register/showRegistrationForm}">register</a>
+                    or if you are already a user <a href="#" th:href="@{/showLoginPage}">login</a>.</h4>
             </div>
         </div>
     </div>
@@ -77,6 +87,8 @@
 </body>
 <script>
     const productsSearch = document.getElementById("products-search")
+    const productsDataList = document.getElementById("products-data-list")
+
 
     const debounce = (func, delay = 500) => {
         let debounceTimer
@@ -91,15 +103,25 @@
 
 
     productsSearch.addEventListener('keyup', debounce(async (event) => {
+
         const searchValue = productsSearch.value
-        const response = await fetch(`/product/search?search=${searchValue}`)
-        // const data = await response.json()
+        productsDataList.innerHTML = ''
+        if (searchValue) {
+            const response = await fetch(`/product/search?search=${searchValue}`)
+            const data = await response.json()
+            for (const [id, productName] of Object.entries(data)) {
+                let newA = document.createElement("a")
+                newA.text = productName
+                newA.href = `/product/${id}`
+                newA.classList.add("dropdown-item")
+                productsDataList.appendChild(newA)
+            }
+            productsDataList.classList.add("show")
+        } else {
+            productsDataList.classList.remove("show")
+        }
+
     }))
-
-
-    // const processChange = debounce(() => productsSearch.addEventListener('change', (event) => {
-    //     console.log(event)
-    // }));
 
 </script>
 </html>

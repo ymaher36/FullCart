@@ -2,6 +2,7 @@ package com.ecommerce.fullcart.controller;
 
 import com.ecommerce.fullcart.entity.user.User;
 import com.ecommerce.fullcart.service.user.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -18,12 +19,14 @@ public class HomeController {
     }
 
     @GetMapping("/")
-    public String index(Model theModel, Authentication auth) {
-        try {
-            User user = userService.findUserByUsername(auth.getName());
+    public String index(Model theModel, HttpServletRequest request) throws Exception {
+
+        if (request.getSession().getAttribute("userId") != null) {
+            int userId = (int) request.getSession().getAttribute("userId");
+            User user = userService.findUserById(userId);
             theModel.addAttribute("user", user);
-        } catch (Exception ignored) {
         }
+
 
         return "home";
     }

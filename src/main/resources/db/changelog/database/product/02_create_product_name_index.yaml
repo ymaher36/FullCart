@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      author: ElZew
+      id: product2
+      labels: 02_create_product_name_index
+      changes:
+        - createIndex:
+            indexName: product_name_index
+            tableName: product
+            columns:
+              - column:
+                  name: name

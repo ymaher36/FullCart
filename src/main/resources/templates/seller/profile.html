@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>FullCart - Home</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" type="text/css"/>
+    <script th:src="@{/webjars/popper.js/1.16.0/umd/popper.js}"></script>
+    <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+    <script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+</head>
+<body>
+<nav class="navbar navbar-expand navbar-dark bg-primary">
+    <a class="navbar-brand h1" th:href="@{/}">FullCart</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/}">Home <span class="sr-only">(current)</span></a>
+            </li>
+
+            <li class="nav-item" th:if="${#authorization.expression('isAuthenticated()')}
+                                            and ${#authorization.expression('hasAuthority(''Customer'')')}">
+                <a class="nav-link" href="#">Cart</a>
+            </li>
+            <li class="nav-item" th:if="${#authorization.expression('isAuthenticated()')}
+                                            and ${#authorization.expression('hasAuthority(''Seller'')')}">
+                <a class="nav-link" th:href="@{/product/my-products}">My Products and Orders</a>
+            </li>
+        </ul>
+        <ul class="navbar-nav navbar-right">
+            <li class="nav-item active" th:if="${#authorization.expression('isAuthenticated()')}">
+                <a class="nav-link font-weight-bold h5" th:href="@{${'/profile/'+user.getId()}(type=details)}"
+                   th:text="${#strings.capitalize(user.name)}"></a>
+            </li>
+            <li class="nav-item active" th:if="${#authorization.expression('!isAuthenticated()')}">
+                <a class="nav-link" th:href="@{/showLoginPage}"><span class="glyphicon glyphicon-log-in"
+                                                                      aria-hidden="true"></span>&nbsp;Sign in</a>
+            </li>
+
+            <li class="nav-item" th:if="${#authorization.expression('isAuthenticated()')}">
+                <form action="#" th:action="@{/logout}" method="POST">
+                    <button type="submit" class="btn btn-danger">
+                        Logout
+                    </button>
+                </form>
+            </li>
+        </ul>
+    </div>
+</nav>
+<div class="container d-flex h-100 p-4">
+    <div class="row w-100">
+        <div class="card border-info mb-3 col-12">
+            <div class="card-header text-info ">
+                <h1 class="card-title" th:text="${user.name}"></h1>
+                <h4 class="card-text" th:text="${user.role.name}"></h4>
+                <p class="card-text" th:text="${user.email}"></p>
+                <div class="btn-group">
+                    <a th:href="@{${'/profile/'+user.getId()}(type=details)}"
+                       class="btn btn-outline-info" th:classappend="${type}=='details'?'active':''">Profile Details</a>
+                </div>
+            </div>
+            <div class="card-body" th:if="${type}=='details'">
+                <div class="row m-2 justify-content-end">
+                    <a href="#" class="btn btn-secondary mx-1">Edit profile</a>
+                    <a href="#" class="btn btn-warning mx-1">Change password</a>
+                </div>
+                <div class="row my-4">
+                    <div class="col">
+                        <label for="username">Name</label>
+                        <input class="form-control" type="text" name="name" id="name" disabled
+                               th:value="${user.name}">
+                    </div>
+                    <div class="col">
+                        <label for="username">Username</label>
+                        <input class="form-control" type="text" name="username" id="username" disabled
+                               th:value="${user.username}">
+                    </div>
+                    <div class="col">
+                        <label for="username">Email</label>
+                        <input class="form-control" type="text" name="email" id="email" disabled
+                               th:value="${user.email}">
+                    </div>
+                </div>
+                <div class="row my-4">
+                    <div class="col">
+                        <label for="username">Phone Number</label>
+                        <input class="form-control" type="text" name="phoneNumber" id="phoneNumber" disabled
+                               th:value="${user.phoneNumber}">
+                    </div>
+                    <div class="col">
+                        <label for="username">Role</label>
+                        <input class="form-control" type="text" name="role" id="role" disabled
+                               th:value="${user.role.name}">
+                    </div>
+                    <div class="col">
+                        <label for="username">Created At</label>
+                        <input class="form-control" type="text" name="createdAt" id="createdAt" disabled
+                               th:value="${user.createdAt.toString()}">
+                    </div>
+                </div>
+            </div>
+            <div class="card-body" th:if="${type}=='address'">
+                address
+            </div>
+            <div class="card-body" th:if="${type}=='order'">
+                order
+            </div>
+        </div>
+    </div>
+    <div class="row">
+
+    </div>
+</div>
+</body>
+<script>
+</script>
+</html>

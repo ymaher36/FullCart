@@ -1,9 +1,12 @@
 package com.ecommerce.fullcart.controller.user;
 
 import com.ecommerce.fullcart.dto.UserDto;
+import com.ecommerce.fullcart.entity.user.Role;
 import com.ecommerce.fullcart.entity.user.User;
 import com.ecommerce.fullcart.service.user.RoleService;
 import com.ecommerce.fullcart.service.user.UserService;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +22,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import static org.hibernate.sql.ast.SqlTreeCreationLogger.LOGGER;
+
 @Controller
 @RequestMapping("/register")
 public class RegistrationController {
@@ -30,9 +35,9 @@ public class RegistrationController {
     private RoleService roleService;
 
     @Autowired
-    public RegistrationController(UserService userService) {
+    public RegistrationController(UserService userService, RoleService roleService) {
         this.userService = userService;
-
+        this.roleService = roleService;
     }
 
     @InitBinder
@@ -46,11 +51,12 @@ public class RegistrationController {
     @GetMapping("/showRegistrationForm")
     public String showRegistrationForm(Model theModel, Authentication auth) {
         if (auth != null) return "redirect:/";
-        Map<Integer, String> role = new HashMap<>();
-        role.put(1, "Customer");
-        role.put(2, "Seller");
+        Map<Integer, String> roleMap = new HashMap<>();
+        for (Role role : roleService.findAllRoles()) {
+            roleMap.put(role.getId(), role.getName());
+        }
         theModel.addAttribute("newUser", new UserDto());
-        theModel.addAttribute("roleList", role);
+        theModel.addAttribute("roleMap", roleMap);
 
 
         return "auth/registration-form";
@@ -58,19 +64,24 @@ public class RegistrationController {
 
     @PostMapping("/processRegistration")
     public String processRegistrationForm(
-            @Valid @ModelAttribute("newUser") UserDto theNewUser,
-            @RequestParam(name = "role") String role_id,
+            @Valid @ModelAttribute("newUser") UserDto newUser,
             BindingResult theBindingResult,
-            HttpSession session, Model theModel) {
+            @RequestParam(name = "role") String roleId,
+            Model theModel,
+            HttpServletRequest request) {
 
-        String username = theNewUser.getUsername();
+        String username = newUser.getUsername();
         logger.info("Processing registration form for: " + username);
-
         // form validation
+
         if (theBindingResult.hasErrors()) {
+            Map<Integer, String> roleMap = new HashMap<>();
+            for (Role role : roleService.findAllRoles()) {
+                roleMap.put(role.getId(), role.getName());
+            }
+            theModel.addAttribute("roleMap", roleMap);
             return "auth/registration-form";
         }
-
         // check the database if user already exists
         User existing = userService.findUserByUsername(username);
         if (existing != null) {
@@ -82,12 +93,16 @@ public class RegistrationController {
         }
 
         // create user account and store in the databse
-        User savedUser = userService.save(theNewUser,role_id);
+        User savedUser = userService.save(newUser, roleId);
         logger.info("Successfully created user: " + username);
 
         // place user in the web http session for later use
-        session.setAttribute("user", savedUser);
-
-        return "home";
+//        session.setAttribute("user", savedUser);
+        try {
+            request.login(savedUser.getUsername(), newUser.getPassword());
+        } catch (ServletException e) {
+            LOGGER.error("Error while login ", e);
+        }
+        return "redirect:/";
     }
 }

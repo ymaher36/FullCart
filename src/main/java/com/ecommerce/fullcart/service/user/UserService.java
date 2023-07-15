@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Optional;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -48,8 +49,6 @@ public class UserService implements UserDetailsService {
         }
         Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority(user.getRole().getName()));
-
-
         return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), authorities);
     }
 
@@ -70,9 +69,20 @@ public class UserService implements UserDetailsService {
         return userRepository.findByUsername(username);
     }
 
-    public User save(UserDto newUser, String role_id) {
+    public User findUserById(int id) throws Exception {
+        Optional<User> userOptional = userRepository.findById(id);
+        User user;
+        if (userOptional.isPresent()) {
+            user = userOptional.get();
+        } else {
+            throw new Exception("No User with this Id");
+        }
+        return user;
+    }
+
+    public User save(UserDto newUser, String roleId) {
         User user = new User();
-        Role role = roleRepository.findById(Integer.parseInt(role_id));
+        Role role = roleRepository.findById(Integer.parseInt(roleId));
         user.setUsername(newUser.getUsername());
         user.setPassword(passwordEncoder.encode(newUser.getPassword()));
         user.setName(newUser.getName());

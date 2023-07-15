@@ -6,28 +6,47 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import org.springframework.beans.factory.annotation.Value;
 
 public class ProductDTO {
-    @Size(min = 10, max = 200, message = " must be between 6 and 200 character.")
+
+    private int id;
+    @Size(min = 5, max = 200, message = " Must be between 6 and 200 character.")
     private String name;
 
     @NotNull(message = " is required")
-    @Size(min = 20, message = " must be between above 20 characters.")
+    @Size(min = 10, message = " Must be between above 10 characters.")
     private String description;
-
+    @NotNull
+    @NotBlank(message = "must choose an image")
     private String image;
 
 
-    @NotNull(message = " is required")
     private User seller;
 
-    @NotNull(message = " is required")
     private Category category;
+    @NotNull
+    @Min(value = 1,message = "Must be more than or equal 1")
+    private double price;
+    @NotNull
+    @Min(value = 1,message = "Must be more than or equal 1")
+    private int quantity;
 
     public ProductDTO() {
+    }
+
+    public ProductDTO(int id, String name, @NotNull(message = " is required") String description, String image, Category category, double price, int quantity) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.image = image;
+        this.category = category;
+        this.price = price;
+        this.quantity = quantity;
     }
 
     public String getName() {
@@ -70,6 +89,30 @@ public class ProductDTO {
         this.category = category;
     }
 
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     @Override
     public String toString() {
         return "ProductDTO{" +
@@ -78,6 +121,8 @@ public class ProductDTO {
                 ", image='" + image + '\'' +
                 ", seller=" + seller +
                 ", category=" + category +
+                ", price=" + price +
+                ", quantity=" + quantity +
                 '}';
     }
 }

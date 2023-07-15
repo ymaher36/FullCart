@@ -16,7 +16,5 @@ databaseChangeLog:
               - column:
                   name: name
                   value: Seller
-#
-#        - insert:
-#            tableName: user
+
 
