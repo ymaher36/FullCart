@@ -100,6 +100,7 @@ public class RegistrationController {
 //        session.setAttribute("user", savedUser);
         try {
             request.login(savedUser.getUsername(), newUser.getPassword());
+            request.getSession().setAttribute("userId", savedUser.getId());
         } catch (ServletException e) {
             LOGGER.error("Error while login ", e);
         }
