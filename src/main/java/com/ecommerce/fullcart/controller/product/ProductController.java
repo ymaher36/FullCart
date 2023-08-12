@@ -92,13 +92,11 @@ public class ProductController {
                              HttpServletRequest request,
                              @RequestParam("newProductImage") MultipartFile file,
                              Model theModel) throws Exception {
-        /*ToDo: Handle backend validation and sending it to front-end,
-            make sure only images are uploaded,
+        /*ToDo:make sure only images are uploaded,
              price, inventory and edit*/
 
         // form validation
         if (bindingResult.hasErrors()) {
-            System.out.println(productDTO.getImage());
             int userId = (int) request.getSession().getAttribute("userId");
             User user = userService.findUserById(userId);
             Map<Integer, String> categoriesMap = new HashMap<>();
@@ -199,9 +197,22 @@ public class ProductController {
         return "product-details";
     }
 
+    @PostMapping("/addCart/{id}")
+    @PreAuthorize("hasAuthority('Customer')")
+    public String addCart(@PathVariable("id") int userId,
+                          HttpServletRequest request,
+                          @RequestParam("productId") int productId,
+                          @RequestParam("quantity") int quantity,
+                          RedirectAttributes redirectAttributes) throws Exception {
+        if (userId != (int) request.getSession().getAttribute("userId")) {
+            return "auth/access-denied";
+        }
+        User user = userService.findUserById(userId);
+        return "";
+    }
+
     @GetMapping("/search")
     @ResponseBody
-
     public Map<Integer, String> productSearch(@RequestParam(name = "search") String search) {
         Map<Integer, String> productMap = new HashMap<>();
         for (Product product : productService.findProductsByName(search)) {

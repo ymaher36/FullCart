@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: order2
+      author: ElZew
+      labels: 02_remove_pivot_tables_id
+      changes:
+        - dropColumn:
+            tableName: cart_product
+            columnName: id
+        - dropColumn:
+            tableName: order_product
+            columnName: id

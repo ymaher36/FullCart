@@ -27,6 +27,16 @@ public class UserDto {
     public UserDto() {
     }
 
+    public UserDto(@NotNull(message = "Username is required") String username,
+                   @NotNull(message = "Name is required") String name,
+                   @NotNull(message = "Email is required") String email,
+                   @NotNull(message = "Phone number is required") String phoneNumber) {
+        this.username = username;
+        this.name = name;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+    }
+
     public String getUsername() {
         return username;
     }
@@ -69,12 +79,6 @@ public class UserDto {
 
     @Override
     public String toString() {
-        return "UserDto{" +
-                "username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", name='" + name + '\'' +
-                ", email='" + email + '\'' +
-                ", phoneNumber='" + phoneNumber + '\'' +
-                '}';
+        return "UserDto{" + "username='" + username + '\'' + ", password='" + password + '\'' + ", name='" + name + '\'' + ", email='" + email + '\'' + ", phoneNumber='" + phoneNumber + '\'' + '}';
     }
 }

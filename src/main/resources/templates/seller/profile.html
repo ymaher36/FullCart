@@ -22,10 +22,7 @@
                 <a class="nav-link" th:href="@{/}">Home <span class="sr-only">(current)</span></a>
             </li>
 
-            <li class="nav-item" th:if="${#authorization.expression('isAuthenticated()')}
-                                            and ${#authorization.expression('hasAuthority(''Customer'')')}">
-                <a class="nav-link" href="#">Cart</a>
-            </li>
+
             <li class="nav-item" th:if="${#authorization.expression('isAuthenticated()')}
                                             and ${#authorization.expression('hasAuthority(''Seller'')')}">
                 <a class="nav-link" th:href="@{/product/my-products}">My Products and Orders</a>
@@ -65,7 +62,7 @@
             </div>
             <div class="card-body" th:if="${type}=='details'">
                 <div class="row m-2 justify-content-end">
-                    <a href="#" class="btn btn-secondary mx-1">Edit profile</a>
+                    <a th:href="@{${'/profile/'+user.getId()}(type=edit)}" class="btn btn-secondary mx-1">Edit profile</a>
                     <a href="#" class="btn btn-warning mx-1">Change password</a>
                 </div>
                 <div class="row my-4">
@@ -103,12 +100,63 @@
                     </div>
                 </div>
             </div>
-            <div class="card-body" th:if="${type}=='address'">
-                address
+            <div class="card-body" th:if="${type}=='edit'">
+                <form method="POST" action="#" th:action="@{${'/profile/edit/'+user.getId()}}"
+                      th:object="${editedUser}">
+                    <input type="hidden" th:field="*{password}">
+                    <div class="row  justify-content-between">
+                        <div class="col">
+                            <h3>Edit User Details</h3>
+                        </div>
+
+                    </div>
+                    <div class="row my-4">
+                        <div class="col">
+                            <label for="newName">Name</label>
+                            <span th:if="${#fields.hasErrors('name')}"
+                                  th:each="err : ${#fields.errors('name')}"
+                                  th:text="${err}" class="text-danger mx-2"></span>
+                            <input class="form-control" type="text" name="newName" id="newName"
+                                   th:field="*{name}">
+                        </div>
+                        <div class="col">
+                            <label for="newUsername">Username</label>
+                            <span th:if="${#fields.hasErrors('username')}"
+                                  th:each="err : ${#fields.errors('username')}"
+                                  th:text="${err}" class="text-danger mx-2"></span>
+                            <input class="form-control" type="text" name="newUsername" id="newUsername"
+                                   th:field="*{username}">
+                        </div>
+
+                    </div>
+                    <div class="row my-4">
+                        <div class="col">
+                            <label for="newEmail">Email</label>
+                            <span th:if="${#fields.hasErrors('email')}"
+                                  th:each="err : ${#fields.errors('email')}"
+                                  th:text="${err}" class="text-danger mx-2"></span>
+                            <input class="form-control" type="text" name="newEmail" id="newEmail"
+                                   th:field="*{email}">
+                        </div>
+                        <div class="col">
+                            <label for="newPhoneNumber">Phone Number</label>
+                            <span th:if="${#fields.hasErrors('phoneNumber')}"
+                                  th:each="err : ${#fields.errors('phoneNumber')}"
+                                  th:text="${err}" class="text-danger mx-2"></span>
+                            <input class="form-control" type="text" name="newPhoneNumber" id="newPhoneNumber"
+                                   th:field="*{phoneNumber}">
+                        </div>
+
+
+                    </div>
+
+                    <button type="submit" class="btn btn-success">
+                        Save changes
+                    </button>
+                </form>
+
             </div>
-            <div class="card-body" th:if="${type}=='order'">
-                order
-            </div>
+
         </div>
     </div>
     <div class="row">

@@ -69,6 +69,17 @@ public class UserService implements UserDetailsService {
         return userRepository.findByUsername(username);
     }
 
+    public User checkUsernameExists(String username, int id) {
+        return userRepository.findByUsernameAndIdNot(username, id);
+    }
+
+    public User checkEmailExists(String email, int id) {
+        return userRepository.findUserByEmailAndIdNot(email, id);
+    }
+
+    public User checkPhoneNumberExists(String phoneNumber, int id) {
+        return userRepository.findUserByPhoneNumberAndIdNot(phoneNumber, id);
+    }
     public User findUserById(int id) throws Exception {
         Optional<User> userOptional = userRepository.findById(id);
         User user;
@@ -92,8 +103,15 @@ public class UserService implements UserDetailsService {
         user.setLastLogin(new Date());
         user.setCreatedAt(new Date());
         user.setRole(role);
-        User savedUser = userRepository.save(user);
-        return savedUser;
+        return userRepository.save(user);
+    }
+
+    public User edit(User user, UserDto editedUser) {
+        user.setName(editedUser.getName());
+        user.setEmail(editedUser.getEmail());
+        user.setPhoneNumber(editedUser.getPhoneNumber());
+        user.setUsername(editedUser.getUsername());
+        return userRepository.save(user);
     }
 
 

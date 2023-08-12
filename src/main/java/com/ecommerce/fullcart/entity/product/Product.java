@@ -1,5 +1,7 @@
 package com.ecommerce.fullcart.entity.product;
 
+import com.ecommerce.fullcart.entity.order.CartProduct;
+import com.ecommerce.fullcart.entity.order.OrderProduct;
 import com.ecommerce.fullcart.entity.user.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -45,6 +47,16 @@ public class Product {
     private List<Price> priceList;
     @OneToOne(mappedBy = "refProduct", cascade = CascadeType.ALL)
     private Inventory inventory;
+
+
+    @OneToMany(mappedBy = "product",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    private List<CartProduct> carts;
+    @OneToMany(mappedBy = "product",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    private List<OrderProduct> orders;
 
     public Product() {
     }
@@ -119,6 +131,22 @@ public class Product {
 
     public void setInventory(Inventory inventory) {
         this.inventory = inventory;
+    }
+
+    public List<CartProduct> getCarts() {
+        return carts;
+    }
+
+    public void setCarts(List<CartProduct> carts) {
+        this.carts = carts;
+    }
+
+    public List<OrderProduct> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(List<OrderProduct> order) {
+        this.orders = orders;
     }
 
     @Override

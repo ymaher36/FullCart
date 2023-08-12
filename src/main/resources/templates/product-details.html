@@ -7,8 +7,22 @@
     <script th:src="@{/webjars/popper.js/1.16.0/umd/popper.js}"></script>
     <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
     <script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+    <style>
+        .logoutBtn {
+            background: none !important;
+            border: none;
+            padding: 0 !important;
+            /*optional*/
+            font-family: arial, sans-serif;
+            /*input has OS specific font-family*/
+            color: #069;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
+
 <nav class="navbar navbar-expand navbar-dark bg-primary">
     <a class="navbar-brand h1" th:href="@{/}">FullCart</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
@@ -25,6 +39,10 @@
             <li class="nav-item" th:if="${#authorization.expression('isAuthenticated()')}
                                             and ${#authorization.expression('hasAuthority(''Customer'')')}">
                 <a class="nav-link" href="#">Cart</a>
+            </li>
+            <li class="nav-item" th:if="${#authorization.expression('isAuthenticated()')}
+                                            and ${#authorization.expression('hasAuthority(''Customer'')')}">
+                <a class="nav-link" href="#">My orders</a>
             </li>
             <li class="nav-item" th:if="${#authorization.expression('isAuthenticated()')}
                                             and ${#authorization.expression('hasAuthority(''Seller'')')}">
@@ -51,10 +69,10 @@
         </ul>
     </div>
 </nav>
-<div class="container d-flex h-100 p-4">
-    <div class="col-8">
+<div class="container d-flex h-100 p-4 align-items-center">
+    <div class="col-7">
         <h1 th:text="${product.name}"></h1>
-        <p class="font-weight-light font-italic" th:text="${product.category.name}"></p>
+        <h5 class="font-weight-light font-italic" th:text="${product.category.name}"></h5>
         <div class="row">
             <div id="carouselExampleSlidesOnly" class="carousel slide" data-ride="carousel">
                 <div class="carousel-inner">
@@ -71,13 +89,64 @@
             <p th:text="${product.description}"></p>
         </div>
     </div>
-    <div class="col-4">
-            <span class="border">
-                alooooooooooo
-            </span>
+
+    <div class="col-5 p-4">
+        <div class="row">
+            <h3 class="font-weight-bold" th:text="${product.price}+'EGP'"></h3>
+        </div>
+        <div class="row" th:if="${product.quantity<=5}">
+            <h5 class="text-danger font-weight-light font-italic"
+                th:text="${'Take care only '+product.quantity+' items left'}"></h5>
+        </div>
+        <div class="row" th:if="${#authorization.expression('!isAuthenticated()')}">
+            <h4>You can buy this product now.</h4>
+            <h6>just <a th:href="@{/register/showRegistrationForm}">register</a>
+                or if you are already a user <a th:href="@{/showLoginPage}">log in</a>.</h6>
+        </div>
+
+        <div class="row"
+             th:if="${#authorization.expression('isAuthenticated()')} and ${#authorization.expression('hasAuthority(''Customer'')')}">
+            <form action="#" th:action="@{${'/order/addCart/'+user.getId()}}" method="POST">
+                <input type="hidden" name="productId" id="productId" th:value="${product.id}">
+                <div class="row my-2">
+                    <label for="selectAddress">Choose address</label>
+                    <select class="form-control" name="selectAddress" id="selectAddress">
+                        <option value="0" class="text-light" disabled selected>--Select shipping address--</option>
+                        <option th:each="address : ${user.addresses}" th:value="${address.id}"
+                                th:text="${'Governorate: '+address.district.governorate.name+'& Distict: '
+                                +address.district.nameEng+'& Street: '+address.street}"></option>
+                    </select>
+                </div>
+                <div class="row">
+                    <label for="quantity">Quantity</label>
+                    <input type="number" class="form-control"  name="quantity" id="quantity" min="1" th:max="${product.quantity}" value="1">
+                </div>
+                <div class="row my-2">
+                    <button type="submit" id="addToCart" class="btn btn-success" disabled>
+                        Add to cart
+                    </button>
+                </div>
+            </form>
+        </div>
+        <div class="row"
+             th:if="${#authorization.expression('isAuthenticated()')} and ${#authorization.expression('hasAuthority(''Seller'')')}">
+            <form action="#" th:action="@{/logout}" method="POST">
+                <h6>To buy this product you need to log in as a customer
+                    <button type="submit" class="logoutBtn">
+                        Logout
+                    </button>
+                    now and use another account.
+                </h6>
+            </form>
+        </div>
     </div>
 </div>
 </body>
 <script>
+    const selectAddress = document.getElementById("selectAddress")
+    const addToCart = document.getElementById("addToCart")
+    selectAddress.addEventListener("change", e => {
+        addToCart.removeAttribute("disabled")
+    })
 </script>
 </html>

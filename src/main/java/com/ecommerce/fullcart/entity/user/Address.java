@@ -105,7 +105,6 @@ public class Address {
                 ", floor='" + floor + '\'' +
                 ", apt='" + apt + '\'' +
                 ", other='" + other + '\'' +
-                ", user=" + user +
                 ", district=" + district +
                 '}';
     }

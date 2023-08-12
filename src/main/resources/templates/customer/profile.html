@@ -27,9 +27,10 @@
                 <a class="nav-link" href="#">Cart</a>
             </li>
             <li class="nav-item" th:if="${#authorization.expression('isAuthenticated()')}
-                                            and ${#authorization.expression('hasAuthority(''Seller'')')}">
-                <a class="nav-link" th:href="@{/product/my-products}">My Products and Orders</a>
+                                            and ${#authorization.expression('hasAuthority(''Customer'')')}">
+                <a class="nav-link" href="#">My orders</a>
             </li>
+
         </ul>
         <ul class="navbar-nav navbar-right">
             <li class="nav-item active" th:if="${#authorization.expression('isAuthenticated()')}">
@@ -63,8 +64,6 @@
                        class="btn btn-outline-info" th:classappend="${type}=='details'?'active':''">Profile Details</a>
                     <a th:href="@{${'/profile/'+user.getId()}(type=address)}"
                        class="btn btn-outline-info" th:classappend="${type}=='address'?'active':''">Address book</a>
-                    <a th:href="@{${'/profile/'+user.getId()}(type=order)}"
-                       class="btn btn-outline-info" th:classappend="${type}=='order'?'active':''">Orders history</a>
                 </div>
             </div>
             <div class="card-body" th:if="${type}=='details'">
@@ -73,7 +72,8 @@
                         <h3>User Details</h3>
                     </div>
                     <div class="col d-flex justify-content-end">
-                        <a href="#" class="btn btn-secondary mx-1">Edit profile</a>
+                        <a th:href="@{${'/profile/'+user.getId()}(type=edit)}" class="btn btn-secondary mx-1">Edit
+                            profile</a>
                         <a href="#" class="btn btn-warning mx-1">Change password</a>
                     </div>
                 </div>
@@ -113,9 +113,66 @@
                 </div>
 
             </div>
+            <div class="card-body" th:if="${type}=='edit'">
+                <form method="POST" action="#" th:action="@{${'/profile/edit/'+user.getId()}}"
+                      th:object="${editedUser}">
+                    <input type="hidden" th:field="*{password}">
+                    <div class="row  justify-content-between">
+                        <div class="col">
+                            <h3>Edit User Details</h3>
+                        </div>
+
+                    </div>
+                    <div class="row my-4">
+                        <div class="col">
+                            <label for="newName">Name</label>
+                            <span th:if="${#fields.hasErrors('name')}"
+                                  th:each="err : ${#fields.errors('name')}"
+                                  th:text="${err}" class="text-danger mx-2"></span>
+                            <input class="form-control" type="text" name="newName" id="newName"
+                                   th:field="*{name}">
+                        </div>
+                        <div class="col">
+                            <label for="newUsername">Username</label>
+                            <span th:if="${#fields.hasErrors('username')}"
+                                  th:each="err : ${#fields.errors('username')}"
+                                  th:text="${err}" class="text-danger mx-2"></span>
+                            <input class="form-control" type="text" name="newUsername" id="newUsername"
+                                   th:field="*{username}">
+                        </div>
+
+                    </div>
+                    <div class="row my-4">
+                        <div class="col">
+                            <label for="newEmail">Email</label>
+                            <span th:if="${#fields.hasErrors('email')}"
+                                  th:each="err : ${#fields.errors('email')}"
+                                  th:text="${err}" class="text-danger mx-2"></span>
+                            <input class="form-control" type="text" name="newEmail" id="newEmail"
+                                   th:field="*{email}">
+                        </div>
+                        <div class="col">
+                            <label for="newPhoneNumber">Phone Number</label>
+                            <span th:if="${#fields.hasErrors('phoneNumber')}"
+                                  th:each="err : ${#fields.errors('phoneNumber')}"
+                                  th:text="${err}" class="text-danger mx-2"></span>
+                            <input class="form-control" type="text" name="newPhoneNumber" id="newPhoneNumber"
+                                   th:field="*{phoneNumber}">
+                        </div>
+
+
+                    </div>
+
+                    <button type="submit" class="btn btn-success">
+                        Save changes
+                    </button>
+                </form>
+
+            </div>
             <div class="card-body" th:if="${type}=='address'">
                 <div class="row m-2 justify-content-end">
-                    <a href="#" class="btn btn-secondary mx-1">Add address</a>
+                    <a th:href="@{${'/profile/'+user.getId()}(type=addAddress)}" class="btn btn-secondary mx-1">Add
+                        address</a>
                 </div>
                 <div class="row">
                     <div th:if="${user.addresses.size() == 0}" class="text-danger">
@@ -123,29 +180,29 @@
                             Your address book is empty!
                         </h3>
                     </div>
-                    <div th:if="${user.addresses.size() != 0}">
+                    <div th:if="${user.addresses.size() != 0}" class="col">
                         <table class="table table-hover">
                             <thead>
                             <tr>
                                 <th scope="col">#</th>
+                                <th scope="col">Governorate</th>
                                 <th scope="col">Street</th>
                                 <th scope="col">Building</th>
                                 <th scope="col">Floor</th>
                                 <th scope="col">Apartment</th>
                                 <th scope="col">District</th>
-                                <th scope="col">Governorate</th>
                                 <th scope="col"></th>
                             </tr>
                             </thead>
                             <tbody>
                             <tr th:each="address,iter : ${user.addresses}">
                                 <td th:text="${iter.count}"></td>
+                                <td th:text="${address.district.governorate.name}"></td>
                                 <td th:text="${address.street}"></td>
                                 <td th:text="${address.building}"></td>
                                 <td th:text="${address.floor}"></td>
                                 <td th:text="${address.apt}"></td>
                                 <td th:text="${address.district.nameEng}"></td>
-                                <td th:text="${address.district.governorate}"></td>
                                 <td>
                                     <div class="btn-group">
 
@@ -161,9 +218,80 @@
                     </div>
                 </div>
             </div>
-            <div class="card-body" th:if="${type}=='order'">
-                order
+            <div class="card-body" th:if="${type}=='addAddress'">
+                <form method="POST" action="#" th:action="@{${'/profile/addAddress/'+user.getId()}}"
+                      th:object="${newAddress}">
+                    <input type="hidden" id="hidden_district" th:field="*{districtId}">
+                    <div class="row  justify-content-between">
+                        <div class="col">
+                            <h3>Add new address</h3>
+                        </div>
+                    </div>
+                    <div class="row my-4">
+                        <div class="col">
+                            <label for="governorate">Governorate (*) </label>
+                            <select class="form-control" id="governorate" name="governorate">
+                                <option th:each="gover : ${governorateMap}" th:value="${gover.key}"
+                                        th:text="${gover.value}"></option>
+                            </select>
+                        </div>
+                        <div class="col">
+                            <label for="district">District (*) </label>
+                            <span th:if="${#fields.hasErrors('districtId')}"
+                                  th:each="err : ${#fields.errors('districtId')}"
+                                  th:text="${err}" class="text-danger mx-2"></span>
+                            <select class="form-control" id="district" name="district" disabled>
+                            </select>
+                        </div>
+                        <div class="col">
+                            <label for="street">Street</label>
+                            <span th:if="${#fields.hasErrors('street')}"
+                                  th:each="err : ${#fields.errors('street')}"
+                                  th:text="${err}" class="text-danger mx-2"></span>
+                            <input class="form-control" type="text" name="street" id="street"
+                                   th:field="*{street}">
+                        </div>
+
+                    </div>
+                    <div class="row my-4">
+                        <div class="col">
+                            <label for="building">Building</label>
+                            <span th:if="${#fields.hasErrors('building')}"
+                                  th:each="err : ${#fields.errors('building')}"
+                                  th:text="${err}" class="text-danger mx-2"></span>
+                            <input class="form-control" type="text" name="building" id="building"
+                                   th:field="*{building}">
+                        </div>
+                        <div class="col">
+                            <label for="floor">Floor</label>
+                            <span th:if="${#fields.hasErrors('floor')}"
+                                  th:each="err : ${#fields.errors('floor')}"
+                                  th:text="${err}" class="text-danger mx-2"></span>
+                            <input class="form-control" type="text" name="floor" id="floor"
+                                   th:field="*{floor}">
+                        </div>
+                        <div class="col">
+                            <label for="apt">Apartment</label>
+                            <span th:if="${#fields.hasErrors('apt')}"
+                                  th:each="err : ${#fields.errors('apt')}"
+                                  th:text="${err}" class="text-danger mx-2"></span>
+                            <input class="form-control" type="text" name="apt" id="apt"
+                                   th:field="*{apt}">
+                        </div>
+
+
+                    </div>
+                    <div class="row my-4 justify-content-center">
+                        <textarea class="col form-control" name="other" id="other" cols="30" rows="4"
+                                  placeholder="Enter any other description"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-success">
+                        Save changes
+                    </button>
+                </form>
+
             </div>
+
         </div>
     </div>
     <div class="row">
@@ -173,5 +301,33 @@
 
 </body>
 <script>
+    const governorate_select = document.getElementById("governorate")
+    const district_select = document.getElementById("district")
+    const hidden_district = document.getElementById("hidden_district")
+    hidden_district.value = 0
+    governorate_select.addEventListener("change", async e => {
+        const value = e.target.value
+        const response = await fetch(`/profile/districts?id=${value}`)
+        const data = await response.json()
+        district_select.innerHTML = ""
+        if (data) {
+            for (const [id, districtName] of Object.entries(data)) {
+                let option = document.createElement("option");
+                option.value = id;
+                option.text = districtName;
+                district_select.appendChild(option);
+            }
+            district_select.removeAttribute("disabled")
+            district_select.dispatchEvent(new Event("change"))
+        } else {
+            district_select.setAttribute("disabled", "")
+        }
+
+
+    })
+    district_select.addEventListener("change", async e => {
+        hidden_district.value = e.target.value
+    })
+
 </script>
 </html>
